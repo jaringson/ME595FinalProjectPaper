@@ -52,7 +52,7 @@
 \newcommand{\response}[1]{{\color{green}[RESPONSE: #1]}}
 
 \title{\LARGE \bf
-	Evolutionary Nonlinear Model Predictive Control
+	Evolutionary Nonlinear Model Predictive Control on a \\ Fixed-Wing and Quadrotor with Uncertainty
 }
 
 %\titlerunning{Short form of title}        % if too long for running head
@@ -85,11 +85,16 @@
 
 \section{Project Direction}
 
+Model predictive control is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. We seek to explore evolutionary algorithms that will allow for complex model predictive control. This work is a continuation of the work accomplished in \todo{cite Phil's nonlinear EMPC} which is developed to parameterize long time horizons. This along with an efficient evolutionary algorithm seeks to decrease the optimization search space while also approximating the underlying model. We believe that the work in \todo{phil's work} did not fully exercise the benefits of longer time horizons or introducing random genetics into the population. Furthermore, this work did not take model uncertainty analysis into consideration. We believe an evolutionary model can find a model which is robust to disturbances through this analysis. 	
+
+
 \section{Background}
 
-Real-time evolutionary model predictive control using a graphics processing unit \cite{hyatt2017real}.
+(linear) Real-time evolutionary model predictive control using a graphics processing unit \cite{hyatt2017real}. 
 
 \section{Team Roles}
+
+Mat and Jaron will both work on the evolutionary algorithm. Mat will apply it to a quadrotor while Jaron will apply it to a fixed-wing aircraft. 
 
 \bibliographystyle{unsrt}
 \bibliography{references} % bibliography data in references.bib

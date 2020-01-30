@@ -62,7 +62,7 @@
 	\thanks{$^{1}$ Jaron Ellingson is an MS candidate in the Department of Mechanical Engineering, Brigham Young University
 		{\tt\small jaronce@byu.eduu}}%
 	\thanks{$^{2}$ Mat Haskell is a PhD candidate in the Department of Mechanical Engineering, Brigham Young University
-		{\tt\small mathewhaskell@byu.edu}}%
+		{\tt\small mathew.haskell@byu.edu}}%
 }
 
 \begin{document}
@@ -85,7 +85,10 @@
 
 \section{Project Direction}
 
-Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. We seek to explore evolutionary algorithms that will allow for nonlinear model predictive control with extended time horizons. This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. This along with an efficient evolutionary algorithm seeks to decrease the optimization search space while also approximating the underlying model. We believe that the work in \todo{phil's work} did not fully exercise the benefits of longer time horizons or introducing random genetics into the population. Furthermore, this work did not take model uncertainty analysis into consideration. We believe an evolutionary model can find a model which is robust to disturbances through this analysis. 	
+Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. For this reason, typically MPC is accomplished using linearized models and convex, fast optimization solvers. We seek to explore evolutionary algorithms that will allow for nonlinear model predictive control with extended time horizons. Each state propagation in an evolutionary algortithm is independent of the others, so the algorithm can be parallelized with a GPU. This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. 
+This along with an efficient evolutionary algorithm seeks to decrease the optimization search space while also approximating the underlying model. % Phil's work did this, so I'm not sure if this is trying to say we want to do this or that Phil did it
+We believe that the work in \cite{hyatt2020parameterized} did not fully exercise the benefits of longer time horizons % I am not sure which benefits Phil didn't exercise here
+or introducing random genetics into the population. Furthermore, this work did not take model uncertainty analysis into consideration. We believe an evolutionary model can find a model which is robust to disturbances through this analysis. 	
 
 
 \section{Background}
@@ -94,7 +97,7 @@ In \cite{hyatt2017real}, linear MPC was performed in real-time on a robotic arm 
 
 The previous work using an evolutionary algorithm was continued in \cite{hyatt2019real} where nonlinear dynamics were used as the model for real-time MPC. The key change in this work from \cite{hyatt2017real} is that the nonlinear dynamics were approximated using a neural network. The neural network was able to learn the nonlinear dynamics in a way that still utilized matrix multiplications, allowing for parallelization of the genetic algorithm on a GPU.
 
-
+In \cite{hyatt2020parameterized}, the evolutionary MPC algorithm is compared to a MPC using a QP solver both with a parameterized optimization design space to reduce the number of design variables. Both algorithms are capable of real-time control of nonlinear robotic arms. With MPC, the optimization design variable is the future trajectory of control inputs that should be applied to the system over a finite time horizon. This work used a piece-wise linear function to parameterize the trajectory of future inputs, usually with only 2 lines (3 points). This allowed for a significant reduction in the search space of the optimization and thus, faster solve times. With the parameterization, the solve times of both algorithms are capable of running control at over 100 Hz. MPC using the QP solver was still faster than the parallelized NEMPC, but the evolutionary algorithm allows for a nonlinear model.
 
 \section{Team Roles}
 

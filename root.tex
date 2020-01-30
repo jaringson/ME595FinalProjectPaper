@@ -58,7 +58,7 @@
 %\titlerunning{Short form of title}        % if too long for running head
 
 \author{Jaron Ellingson$^{1}$, Mat Haskell$^{2}$%
-	\thanks{*This material is based upon work supported by the National Science Foundation under Grant No. 1727010. This work is also supported by the Center for Unmanned Aircraft Systems (C-UAS), a National Science Foundation Industry/University Cooperative Research Center (I/UCRC) under NSF award No. IIP-1161036 along with significant contributions from C-UAS industry members.}% <-this % stops a space
+%	\thanks{*This material is based upon work supported by the National Science Foundation under Grant No. 1727010. This work is also supported by the Center for Unmanned Aircraft Systems (C-UAS), a National Science Foundation Industry/University Cooperative Research Center (I/UCRC) under NSF award No. IIP-1161036 along with significant contributions from C-UAS industry members.}% <-this % stops a space
 	\thanks{$^{1}$ Jaron Ellingson is an MS candidate in the Department of Mechanical Engineering, Brigham Young University
 		{\tt\small jaronce@byu.eduu}}%
 	\thanks{$^{2}$ Mat Haskell is a PhD candidate in the Department of Mechanical Engineering, Brigham Young University
@@ -85,10 +85,8 @@
 
 \section{Project Direction}
 
-Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. For this reason, typically MPC is accomplished using linearized models and convex, fast optimization solvers. We seek to explore evolutionary algorithms that will allow for nonlinear model predictive control with extended time horizons. Each state propagation in an evolutionary algortithm is independent of the others, so the algorithm can be parallelized with a GPU. This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. 
-This along with an efficient evolutionary algorithm seeks to decrease the optimization search space while also approximating the underlying model. % Phil's work did this, so I'm not sure if this is trying to say we want to do this or that Phil did it
-We believe that the work in \cite{hyatt2020parameterized} did not fully exercise the benefits of longer time horizons % I am not sure which benefits Phil didn't exercise here
-or introducing random genetics into the population. Furthermore, this work did not take model uncertainty analysis into consideration. We believe an evolutionary model can find a model which is robust to disturbances through this analysis. 	
+Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. For this reason, MPC is typically accomplished using linearized models and convex optimization solvers. We seek to explore evolutionary algorithms allowing for nonlinear models and constraints, non-convex costs, and extended time horizons. An evolutionary algorithm can be parallelized because each state propagation is independent of the others.
+While parallelization of the evolutionary algorithm allows for real-time control, writing the code to parallelize the algorithm might be out of the scope for this project. A neural network is used in the NEMPC algorithm in \cite{hyatt2019real}, which interfaced with the GPU under the hood. This work seeks to implement NEMPC without using a neural network, making parallelization more difficult. This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. We also intend to parameterize the design space of the optimization to reduce solve times. All previous work using evolutionary MPC was performed on robotic arms. We seek to apply these algorithms to control UAVs, both fixed-wing and multirotor.
 
 
 \section{Background}

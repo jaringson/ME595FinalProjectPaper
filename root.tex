@@ -62,7 +62,7 @@
 	\thanks{$^{1}$ Jaron Ellingson is an MS candidate in the Department of Mechanical Engineering, Brigham Young University
 		{\tt\small jaronce@byu.eduu}}%
 	\thanks{$^{2}$ Mat Haskell is a PhD candidate in the Department of Mechanical Engineering, Brigham Young University
-		{\tt\small email@byu.edu}}%
+		{\tt\small mathewhaskell@byu.edu}}%
 }
 
 \begin{document}
@@ -85,12 +85,16 @@
 
 \section{Project Direction}
 
-Model predictive control is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. We seek to explore evolutionary algorithms that will allow for complex model predictive control. This work is a continuation of the work accomplished in \todo{cite Phil's nonlinear EMPC} which is developed to parameterize long time horizons. This along with an efficient evolutionary algorithm seeks to decrease the optimization search space while also approximating the underlying model. We believe that the work in \todo{phil's work} did not fully exercise the benefits of longer time horizons or introducing random genetics into the population. Furthermore, this work did not take model uncertainty analysis into consideration. We believe an evolutionary model can find a model which is robust to disturbances through this analysis. 	
+Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. We seek to explore evolutionary algorithms that will allow for nonlinear model predictive control with extended time horizons. This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. This along with an efficient evolutionary algorithm seeks to decrease the optimization search space while also approximating the underlying model. We believe that the work in \todo{phil's work} did not fully exercise the benefits of longer time horizons or introducing random genetics into the population. Furthermore, this work did not take model uncertainty analysis into consideration. We believe an evolutionary model can find a model which is robust to disturbances through this analysis. 	
 
 
 \section{Background}
 
-(linear) Real-time evolutionary model predictive control using a graphics processing unit \cite{hyatt2017real}. 
+In \cite{hyatt2017real}, linear MPC was performed in real-time on a robotic arm using an evolutionary optimization algorithm rather than a typical convex solver. To make the algorithm real-time, each state propagation in the evolutionary algorithm during a single generation occured in parallel on a graphics processing unit (GPU). GPU's are known to be fast at matrix multiplications, which the linearized model provided.
+
+The previous work using an evolutionary algorithm was continued in \cite{hyatt2019real} where nonlinear dynamics were used as the model for real-time MPC. The key change in this work from \cite{hyatt2017real} is that the nonlinear dynamics were approximated using a neural network. The neural network was able to learn the nonlinear dynamics in a way that still utilized matrix multiplications, allowing for parallelization of the genetic algorithm on a GPU.
+
+
 
 \section{Team Roles}
 

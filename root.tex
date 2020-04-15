@@ -87,12 +87,12 @@ Our contributions include extending nonlinear evolutionary MPC to flight vehicle
 % \subclass{MSC code1 \and MSC code2 \and more}
 \end{abstract}
 
-\section{Project Direction}
+%\section{Project Direction}
 
 
-Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. For this reason, MPC is typically accomplished using linearized models and convex optimization solvers. We seek to explore evolutionary algorithms allowing for nonlinear models and constraints, non-convex costs, and extended time horizons. 
+%Real-time model predictive control (MPC) is limited to short time horizons and linear systems because the optimization complexity is too large with long time horizons and nonlinear systems. For this reason, MPC is typically accomplished using linearized models and convex optimization solvers. We seek to explore evolutionary algorithms allowing for nonlinear models and constraints, non-convex costs, and extended time horizons. 
 
-This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. Our contributions include extending nonlinear evolutionary MPC to flight vehicles, fixed-wing and multirotor UAVs, as well as enhancing the evolutionary algorithm. We also intend to parameterize the design space of the optimization to reduce solve times. These contributions will validate the robust and effective nature of the algorithm.
+%This work is a continuation of the work accomplished in \cite{hyatt2020parameterized} which is developed to parameterize long time horizons. Our contributions include extending nonlinear evolutionary MPC to flight vehicles, fixed-wing and multirotor UAVs, as well as enhancing the evolutionary algorithm. We also intend to parameterize the design space of the optimization to reduce solve times. These contributions will validate the robust and effective nature of the algorithm.
 
 %While parallelization of the evolutionary algorithm allows for real-time control, writing the code to parallelize the algorithm might be out of the scope for this project. A neural network is used in the NEMPC algorithm in \cite{hyatt2019real}, which interfaced with the GPU under the hood. This work seeks to implement NEMPC without using a neural network, making parallelization more difficult.
 
@@ -190,6 +190,9 @@ where $\chi_l$ is the course angle of our line, and $\check{\chi}$ is the desire
 	
 \end{figure}
 
+
+
+
 My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\end{bmatrix}^{\top}$ represent the control inputs to the system and are constrained to be within certain bounds. The aileron, elevator, and rudder are all constrained to be within $-\pi/2$ to $\pi/2$ radians and the throttle is constrained from 0 to 1. To reduce the number of design variables, I choose to have the inputs applied along a segment of the trajectory and do not choose a new input at every time step. 
 
 %I choose to have 10 control inputs for a time horizon of 1 second with time steps of 0.01 seconds. This means every 0.1 seconds I apply a new control input. \Cref{fig:sub2,fig:cd2} shows only 10 inputs applies over the trajectory of 1 second for two separate test cases.
@@ -209,8 +212,23 @@ My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\
 		\includegraphics[width=0.45\textwidth]{figures/fixedwing_inputs.eps}
 		\label{fig:fw_input_level}
 	}
-	\caption{Case 1 is a base case to see if the optimization knows how to keep the aircraft in level flight. It took 30 seconds to run 3 sec 	onds of simulation.}
+	\caption{Case 1 is the optimization of the aircraft in level flight. The aircraft started at the point (0,0,100) and was commanded to maintain the course on the commanded straight line. It took 37.45 seconds to run 3 seconds of simulation.}
 	\label{fig:fw_level}
+\end{figure*}
+
+\begin{figure*}[htbp]
+	\centering
+	\subfloat[]{
+		\includegraphics[width=0.45\textwidth]{figures/fixedwing_offset.eps}
+		\label{fig:fw_offset_positions}
+	}
+	\qquad
+	\subfloat[]{
+		\includegraphics[width=0.45\textwidth]{figures/fixedwing_offset_inputs.eps}
+		\label{fig:fw_offset_inputs}
+	}
+	\caption{Case 2 is the optimization of the aircraft in level flight but with an initial offset starting point. The aircraft started at the point (0,-1,100) and was commanded to maintain the course on the commanded straight line. It took 120.64 seconds to run 10 seconds of simulation.}
+	\label{fig:fw_offset}
 \end{figure*}
 
 
@@ -225,7 +243,7 @@ My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\
 		\includegraphics[width=0.45\textwidth]{figures/fixedwing_circle_inputs.eps}
 		\label{fig:fw_circle_input}
 	}
-	\caption{Case 2 is a base case to see if the optimization knows how to keep the aircraft in  flight. It took 30 seconds to run 3 seconds of simulation.}
+	\caption{Case 2 is a base case to see if the optimization knows how to keep the aircraft in  flight. It took 37.21 seconds to run 3 seconds of simulation.}
 	\label{fig:fw_circle}
 \end{figure*}
 

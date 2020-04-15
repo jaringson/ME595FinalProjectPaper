@@ -120,7 +120,7 @@ The MPC problem is formulated by
 \end{equation}
 
 
-where $f(\mathbf{x}_k,\mathbf{u}_k)$ represents the nonlinear dynamics of a wither the quadrotor or fixed-wing aircraft applied with Runge-Kutta 4th order approximation. $\mathbf{x}_k$ and $\mathbf{x}_{d}$ are our calculated state and desired state, $\mathbf{u}_k$ represents our inputs, and $\mathbf{L}_b$ and $\mathbf{U}_b$ are our lower and upper bounds on the inputs. Finally, the diagonal matrix $Q$ represents a cost weighting matrix associated with each state. In \cref{subsub:quad,subsub:fw} we will highlight the differences between the quadrotor and fixed-wing states, desired state, inputs, and cost matrix.
+where $f(\mathbf{x}_k,\mathbf{u}_k)$ represents the nonlinear dynamics of a wither the quadrotor or fixed-wing aircraft applied with Runge-Kutta 4th order approximation. $\mathbf{x}_k$ and $\mathbf{x}_{d}$ are our calculated state and desired state, $\mathbf{u}_k$ represents our inputs, and $\mathbf{L}_b$ and $\mathbf{U}_b$ are our lower and upper bounds on the inputs. Finally, the positive definite diagonal matrix $Q$ represents a cost weighting matrix associated with each state. In \cref{subsub:quad,subsub:fw} we will highlight the differences between the quadrotor and fixed-wing states, desired state, inputs, and cost matrix.
 
 -Optimize time window of control inputs
 
@@ -172,93 +172,6 @@ To evaluate the fitness of each
 
 
 
-\subsubsection{Quadrotor Fitness}
-\label{subsub:quad}
-
-\subsubsection{Fixed-Wing Fitness}
-\label{subsub:fw}
-
-
-
-where $f(\mathbf{x}_k,\mathbf{u}_k)$ represents the nonlinear dynamics of a fixed wing aircraft applied with Runge-Kutta 4th order approximation (see Appendix \ref{sec:dynamics} for more details). $\mathbf{x}_k$ and $\mathbf{x}_{d}$ are our calculated state and desired state where,
-
-\begin{equation}
-\label{eq:lqr_current_desired_states}
-\mathbf{x}=\begin{bmatrix}\mathbf{p} \\ \mathbf{v} \\ \mathbf{q} \\ \boldsymbol{\omega}\end{bmatrix}.
-\end{equation}
-
-Furthermore, $Q$ is our cost matrix and initialized as,
-
-\begin{equation}
-Q = \text{diagonal}(\begin{bmatrix}
-0,0,100,1,0,0,50,50,50,0,0,0
-\end{bmatrix}).
-\end{equation}
-
-I choose this particular cost because I don't necessarily want the aircraft to hit a particular location but to maintain a desired altitude and heading while also maintaining a desired forward velocity. This can be seen in \Cref{fig:vet_field} where the aircraft is some distance away from the the direct path from $w_{i-1}$ to $w_i$. \Cref{fig:vet_field} also shows a vector field which slowly places the aircraft onto a course to the next waypoint. This vector field allows us to define the commanded heading of the aircraft as we are far away from the desired path. this vector field is defined as,
-
-\begin{equation}
-\check{\chi}=\chi_{l}-\chi_{\infty}\frac{2}{\pi}\tan^{-1}\left(k_{\chi}\mathbf{e}_{2}\right),
-\end{equation}
-
-where $\chi_l$ is the course angle of our line, and $\check{\chi}$ is the desired course angle. Furthermore, $k_\chi$ is a positive gain and $\chi_\infty$ is the maximum allowed difference between $\check{\chi}$ and $\chi_l$.
-
-
-\begin{figure}
-	\centering
-	\begin{tikzpicture}
-	\def\length{sqrt(1+(-pi/6*2/pi * atan(0.1*x))^2)}
-	\begin{axis}[
-	title={},
-	domain=-2:2,
-	view={0}{90},
-	axis background/.style={fill=white},
-	xticklabels={},
-	yticklabels={},
-	ticks=none,
-	]
-	\addplot3[black,
-	quiver={
-		u={-pi/6*2/pi * atan(0.1*x)/\length},
-		v={1/\length},
-		scale arrows=0.3,
-	},
-	-stealth,samples=15]
-	{x};
-	\end{axis}
-	%\draw [very thick][-latex](160pt,20pt)..controls(100pt,25pt) and (60pt,45pt)..(42pt,58pt);
-	%\filldraw(160pt,20pt)circle(2pt) (100pt,25pt)circle (2pt) (60pt,45pt)circle (2pt) (42pt,58pt)circle (2pt);
-	\coordinate[label = above:$w_{i}$] (wi) at (97.5pt,161pt);
-	\node at (wi)[circle,fill,inner sep=2.5pt]{};
-	\coordinate[label = below:$w_{i-1}$] (wi1) at (97.5pt,0pt);
-	\node at (wi1)[circle,fill,inner sep=2.5pt]{};
-	\draw[very thick] (wi1) -- (wi);
-	
-	\draw [line width=2pt, dash pattern=on \pgflinewidth off 2pt] plot [smooth, tension=0.75] coordinates {(140pt,37pt) (105pt,60pt) (97.5pt,100pt)};
-	\node [aircraft top,fill=black,minimum width=0.75cm,rotate=160] at (150pt,33.5pt) {};
-	
-	%\filldraw(97.5pt,161pt)circle(2pt) (97.5pt,0pt)circle(2pt);
-	%\draw[very thick] (97.5pt,161pt) -- (97.5pt,0pt);
-	\end{tikzpicture}
-	\caption{A vector field which converges onto a path from one waypoint to another.}
-	\label{fig:vet_field}
-	
-\end{figure}
-
-
-
-
-My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\end{bmatrix}^{\top}$ represent the control inputs to the system and are constrained to be within certain bounds. The aileron, elevator, and rudder are all constrained to be within $-\pi/2$ to $\pi/2$ radians and the throttle is constrained from 0 to 1. To reduce the number of design variables, I choose to have the inputs applied along a segment of the trajectory and do not choose a new input at every time step. 
-
-%I choose to have 10 control inputs for a time horizon of 1 second with time steps of 0.01 seconds. This means every 0.1 seconds I apply a new control input. \Cref{fig:sub2,fig:cd2} shows only 10 inputs applies over the trajectory of 1 second for two separate test cases.
-
-\begin{figure*}[htbp]
-	\centering
-	\includegraphics[width=0.45\textwidth]{figures/fixedwing_convergence.eps}
-	\caption{Fixed-wing convergence.}
-	\label{fig:fw_convergence}
-\end{figure*}
-
 
 \subsection{Selection}
 
@@ -307,6 +220,111 @@ My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\
 
 -Don’t randomly initialize the population every time
 First solve takes longer, but can be real-time afterwards
+
+
+\section{Quadrotor}
+\label{subsub:quad}
+
+\section{Fixed-Wing}
+\label{subsub:fw}
+
+The fixed-wing evolutionary and control characteristics are described in this section. We start with the dynamics $f(\mathbf{x}_k,\mathbf{u}_k)$ represents the nonlinear dynamics of a fixed wing aircraft applied with Runge-Kutta 4th order approximation (see Appendix \ref{sec:dynamics} for more details). $\mathbf{x}_k$ and $\mathbf{x}_{d}$ are our calculated state and desired state where,
+
+\begin{equation}
+\label{eq:lqr_current_desired_states}
+\mathbf{x}=\begin{bmatrix}\mathbf{p} \\ \mathbf{v} \\ \mathbf{q} \\ \boldsymbol{\omega}\end{bmatrix}.
+\end{equation}
+
+Furthermore, $Q$ is our cost matrix and initialized as,
+
+\begin{equation}
+Q = \text{diagonal}(\begin{bmatrix}
+0,0,100,0,0,0,50,50,50,0,0,0
+\end{bmatrix}).
+\end{equation}
+
+We choose this particular cost because we don't necessarily want the aircraft to hit a particular location but to maintain a desired altitude and heading. 
+
+The desired heading is calculated by the position of the aircraft through a vector field. An example of a vector field can be seen in \Cref{fig:vet_field}. In this figure the aircraft is some distance away from the waypoint path $w_{i-1}$ to $w_i$. \Cref{fig:vet_field} shows the vector field which slowly places the aircraft onto a course to the next waypoint. This vector field allows us to define the commanded heading of the aircraft as we are far away from the desired path. this vector field is defined as,
+
+\begin{equation}
+\check{\chi}=\chi_{l}-\chi_{\infty}\frac{2}{\pi}\tan^{-1}\left(k_{path}\mathbf{e}_{2}\right),
+\end{equation}
+
+where $\chi_l$ is the course angle of our line, and $\check{\chi}$ is the desired course angle. Furthermore, $k_{path}$ is a positive gain and $\chi_\infty$ is the maximum allowed difference between $\check{\chi}$ and $\chi_l$.
+
+We also choose to implement a vector field for maintaining a course on a circular path. The vector field in this case is defined as 
+
+
+\begin{equation}
+\begin{aligned}
+\check{\chi}= & \varphi +  \lambda \left(\frac{2}{\pi}+\tan^{-1}\left(k_{orbit}\frac{d-\rho}{\rho}\right)\right) \\
+\varphi = & atan2\left(p_e-c_e,p_n-c_n\right)+2\pi m,
+\end{aligned}
+\end{equation}
+
+where the orbit angle $\varphi$ needs to wrapped, $\lambda$ determines the direction of the vector field, $p_e$ and $p_n$ and east and north coordinates of the aircraft, $c_e$ and $c_n$ are the coordinates of the circle, $d$ is the distance of the aircraft away from the center of the circle, and $\rho$ is the circle radius.
+
+
+\begin{figure}
+	\centering
+	\begin{tikzpicture}
+	\def\length{sqrt(1+(-pi/6*2/pi * atan(0.1*x))^2)}
+	\begin{axis}[
+	title={},
+	domain=-2:2,
+	view={0}{90},
+	axis background/.style={fill=white},
+	xticklabels={},
+	yticklabels={},
+	ticks=none,
+	]
+	\addplot3[black,
+	quiver={
+		u={-pi/6*2/pi * atan(0.1*x)/\length},
+		v={1/\length},
+		scale arrows=0.3,
+	},
+	-stealth,samples=15]
+	{x};
+	\end{axis}
+	%\draw [very thick][-latex](160pt,20pt)..controls(100pt,25pt) and (60pt,45pt)..(42pt,58pt);
+	%\filldraw(160pt,20pt)circle(2pt) (100pt,25pt)circle (2pt) (60pt,45pt)circle (2pt) (42pt,58pt)circle (2pt);
+	\coordinate[label = above:$w_{i}$] (wi) at (97.5pt,161pt);
+	\node at (wi)[circle,fill,inner sep=2.5pt]{};
+	\coordinate[label = below:$w_{i-1}$] (wi1) at (97.5pt,0pt);
+	\node at (wi1)[circle,fill,inner sep=2.5pt]{};
+	\draw[very thick] (wi1) -- (wi);
+	
+	\draw [line width=2pt, dash pattern=on \pgflinewidth off 2pt] plot [smooth, tension=0.75] coordinates {(140pt,37pt) (105pt,60pt) (97.5pt,100pt)};
+	\node [aircraft top,fill=black,minimum width=0.75cm,rotate=160] at (150pt,33.5pt) {};
+	
+	%\filldraw(97.5pt,161pt)circle(2pt) (97.5pt,0pt)circle(2pt);
+	%\draw[very thick] (97.5pt,161pt) -- (97.5pt,0pt);
+	\end{tikzpicture}
+	\caption{A vector field which converges onto a path from one waypoint to another.}
+	\label{fig:vet_field}
+	
+\end{figure}
+
+
+
+
+My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\end{bmatrix}^{\top}$ represent the control inputs to the system and are constrained to be within certain bounds. The aileron, elevator, and rudder are all constrained to be within $-\pi/2$ to $\pi/2$ radians and the throttle is constrained from 0 to 1. 
+
+%To reduce the number of design variables, I choose to have the inputs applied along a segment of the trajectory and do not choose a new input at every time step. 
+
+%I choose to have 10 control inputs for a time horizon of 1 second with time steps of 0.01 seconds. This means every 0.1 seconds I apply a new control input. \Cref{fig:sub2,fig:cd2} shows only 10 inputs applies over the trajectory of 1 second for two separate test cases.
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=0.45\textwidth]{figures/fixedwing_convergence.eps}
+	\caption{Fixed-wing convergence.}
+	\label{fig:fw_convergence}
+\end{figure*}
+
+
+We also experimented with the number of generations and population size. \Cref{fig:fw_convergence} highlights convergence for different number of 
 
 
 \section{Results}

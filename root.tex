@@ -105,10 +105,56 @@ The previous work using an evolutionary algorithm was continued in \cite{hyatt20
 
 In \cite{hyatt2020parameterized}, the evolutionary MPC algorithm is compared to a MPC using a QP solver both with a parameterized optimization design space to reduce the number of design variables. Both algorithms are capable of real-time control of nonlinear robotic arms. With MPC, the optimization design variable is the future trajectory of control inputs that should be applied to the system over a finite time horizon. This work used a piece-wise linear function to parameterize the trajectory of future inputs, usually with only 2 lines (3 points). This allowed for a significant reduction in the search space of the optimization and thus, faster solve times. With the parameterization, the solve times of both algorithms are capable of running control at over 100 Hz. MPC using the QP solver was still faster than the parallelized NEMPC, but the evolutionary algorithm allows for a nonlinear model.
 
+\section{Model Predictive Control}
 
-\section{Quadrotor Optimization}
+-Optimize time window of control inputs
 
-\section{Fixed Wing Optimization}
+-Predict future states and compute error with desired states
+
+-Quadratic cost on error
+
+-Apply 1st set of inputs and resolve problem at next time 
+step (model isn't perfect)
+
+
+\section{Evolutionary Algorithm}
+
+Most of the work which has been accomplished on our evolutionary algorithm developement was inspired by or implemented from \cite{martins2017multidisciplinary}.
+
+\subsection{Initialization}
+
+-LHS for initial population generation
+
+-Also add in 1 sample for equilibrium
+
+-Lot of time can be spent at equilibrium
+
+-Finds this solution immediately
+
+-Can add slew rate
+
+-Enforce saturation (bound constraints)
+
+
+\subsection{Fitness}
+
+-RK4 integration of dynamics for f(x,u)
+
+-Q is positive definite diagonal matrix
+
+-Design variables are only $u_k$ vectors
+
+-Large reduction of order
+
+-Dim = m*N rather than (m+n)*n
+
+-With N = 10 and m = 4 gives 40 design variables
+
+
+
+\subsubsection{Quadrotor Fitness}
+
+\subsubsection{Fixed Wing Optimization}
 
 
 The fixed wing NMPC problem we want to solve is formulated by
@@ -196,6 +242,62 @@ where $\chi_l$ is the course angle of our line, and $\check{\chi}$ is the desire
 My design variables $\mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\end{bmatrix}^{\top}$ represent the control inputs to the system and are constrained to be within certain bounds. The aileron, elevator, and rudder are all constrained to be within $-\pi/2$ to $\pi/2$ radians and the throttle is constrained from 0 to 1. To reduce the number of design variables, I choose to have the inputs applied along a segment of the trajectory and do not choose a new input at every time step. 
 
 %I choose to have 10 control inputs for a time horizon of 1 second with time steps of 0.01 seconds. This means every 0.1 seconds I apply a new control input. \Cref{fig:sub2,fig:cd2} shows only 10 inputs applies over the trajectory of 1 second for two separate test cases.
+
+\begin{figure*}[htbp]
+	\centering
+	\includegraphics[width=0.45\textwidth]{figures/fixedwing_convergence.eps}
+	\caption{Fixed-wing convergence.}
+	\label{fig:fw_convergence}
+\end{figure*}
+
+
+\subsection{Selection}
+
+-Tried keeping top percentage
+
+--Match with equal amount of strangers to prevent stagnation
+
+--Yields small mating pool
+
+-Tried tournament from textbook
+
+--Randomly pair off all members of population twice, keeping winners
+
+--Mating pool is same size as population
+
+
+\subsection{Crossover}
+
+-Tried randomly picking genes from parents one by one
+
+-Randomly flip a coin for each design variable
+
+-Tried linear crossover
+
+-xc1 = 0.5xp1 + 0.5xp2
+
+-xc2 = 2xp1 - xp2
+
+
+\subsection{Mutation}
+
+-Tried mutating entire members of the population with low probability
+
+-Tried mutating each individual gene of each member of the population individually with low probability
+
+-Mutations were adding a small amount of gaussian noise
+
+
+\subsection{Warmstart}
+
+-Assume that optimal input won’t vary much from time step to time step
+
+-Run 200 (or any number) of generations the first time solving
+
+-After the first time, use the population from the previous time step as the starting point and only run again for 1 generation
+
+-Don’t randomly initialize the population every time
+First solve takes longer, but can be real-time afterwards
 
 
 \section{Results}

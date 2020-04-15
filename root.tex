@@ -107,6 +107,21 @@ In \cite{hyatt2020parameterized}, the evolutionary MPC algorithm is compared to 
 
 \section{Model Predictive Control}
 
+
+The MPC problem is formulated by
+
+\begin{equation}
+\label{eq:objective}
+\begin{aligned}
+\text{minimizing} & \quad J= \sum_{k=0}^{T-1} (f(\mathbf{x}_k,\mathbf{u}_k)-\mathbf{x}_{d})^{\top} Q (f(\mathbf{x}_k,\mathbf{u}_k)-\mathbf{x}_{d}) \\
+\text{with respect to} & \quad \mathbf{u}_k  \\
+\text{subject to} & \quad \mathbf{L}_b \le \mathbf{u}_k \le \mathbf{U}_b, \\
+\end{aligned}
+\end{equation}
+
+
+where $f(\mathbf{x}_k,\mathbf{u}_k)$ represents the nonlinear dynamics of a wither the quadrotor or fixed-wing aircraft applied with Runge-Kutta 4th order approximation. $\mathbf{x}_k$ and $\mathbf{x}_{d}$ are our calculated state and desired state, $\mathbf{u}_k$ represents our inputs, and $\mathbf{L}_b$ and $\mathbf{U}_b$ are our lower and upper bounds on the inputs. Finally, the diagonal matrix $Q$ represents a cost weighting matrix associated with each state. In \cref{subsub:quad,subsub:fw} we will highlight the differences between the quadrotor and fixed-wing states, desired state, inputs, and cost matrix.
+
 -Optimize time window of control inputs
 
 -Predict future states and compute error with desired states
@@ -117,11 +132,14 @@ In \cite{hyatt2020parameterized}, the evolutionary MPC algorithm is compared to 
 step (model isn't perfect)
 
 
+
 \section{Evolutionary Algorithm}
 
 Most of the work which has been accomplished on our evolutionary algorithm developement was inspired by or implemented from \cite{martins2017multidisciplinary}.
 
 \subsection{Initialization}
+
+I initialize our first population, we choose to implement a Latin-Hypercube sampling algorithm to optimize starting coverage of the design space. We also decided to insert 1 sample at equilibrium because we know that optimal solutions will lay near equilibrium, especially at level or minimal movement flight. 
 
 -LHS for initial population generation
 
@@ -131,12 +149,14 @@ Most of the work which has been accomplished on our evolutionary algorithm devel
 
 -Finds this solution immediately
 
--Can add slew rate
+-Can add slew rate \todo{I thought we had this but didn't really keep it.}
 
 -Enforce saturation (bound constraints)
 
 
 \subsection{Fitness}
+
+To evaluate the fitness of each 
 
 -RK4 integration of dynamics for f(x,u)
 
@@ -153,23 +173,12 @@ Most of the work which has been accomplished on our evolutionary algorithm devel
 
 
 \subsubsection{Quadrotor Fitness}
+\label{subsub:quad}
 
-\subsubsection{Fixed Wing Optimization}
+\subsubsection{Fixed-Wing Fitness}
+\label{subsub:fw}
 
 
-The fixed wing NMPC problem we want to solve is formulated by
-
-\begin{equation}
-\label{eq:objective}
-\begin{aligned}
-\text{minimizing} & \quad J= \sum_{k=0}^{T-1} (f(\mathbf{x}_k,\mathbf{u}_k)-\mathbf{x}_{d})^{\top} Q (f(\mathbf{x}_k,\mathbf{u}_k)-\mathbf{x}_{d}) \\
-\text{with respect to} & \quad \mathbf{u}_k =\begin{bmatrix}s_{a} & s_{e} & s_{t} & s_{r}\end{bmatrix}^{\top} \\
-\text{subject to} & \quad -2 \le s_{a} \le 2, \\
-& \quad -2 \le s_{e} \le 2, \\
-& \quad \hspace{13pt} 0 \le s_{t} \le 1, \\
-& \quad -2 \le s_{r} \le 2,
-\end{aligned}
-\end{equation}
 
 where $f(\mathbf{x}_k,\mathbf{u}_k)$ represents the nonlinear dynamics of a fixed wing aircraft applied with Runge-Kutta 4th order approximation (see Appendix \ref{sec:dynamics} for more details). $\mathbf{x}_k$ and $\mathbf{x}_{d}$ are our calculated state and desired state where,
 
